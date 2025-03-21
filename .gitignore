@@ -1,0 +1,6 @@
+build
+.vscode
+
+subprojects/*
+!subprojects/logger.wrap
+!subprojects/glfwe.wrap
