@@ -65,10 +65,10 @@ public:
                 for (int curr_i = 0; curr_i < layer_size; curr_i++) {
                     glm::vec2 curr_position = {curr_x, vertical_position(layer_size, curr_i)};
 
-                    GLFWE::Shape::ShapeShader::set_color(line_color(layer.nodes[curr_i].weights[prev_i]));
+                    GLFWE::Shape::ShapeShader::set_color(line_color(layer[curr_i].weights[prev_i]));
                     GLFWE::Shape::Quad::draw_line(prev_position, curr_position, line_thickness);
 
-                    // int weight = std::round(layer.nodes[curr_i].weights[prev_i] * 100);
+                    // int weight = std::round(layer[curr_i].weights[prev_i] * 100);
                     // text_writer.render_string(std::to_string(weight), prev_position + (curr_position-prev_position)*glm::vec2(0.5, 0.5), 1, {0, 0, 0});
                 }
             }
@@ -84,7 +84,7 @@ public:
 
             for (int curr_i = 0; curr_i < layer_size; curr_i++) {
                 glm::vec2 position = {curr_x, vertical_position(layer_size, curr_i)};
-                float node_value = n.network[layer_i].is_input_layer ? n.network[layer_i].nodes[curr_i].raw() : n.network[layer_i].nodes[curr_i].value();
+                float node_value = n.network[layer_i].is_input_layer ? n.network[layer_i][curr_i].raw() : n.network[layer_i][curr_i].value();
 
                 GLFWE::Shape::ShapeShader::set_color(node_color(node_value));
                 GLFWE::Shape::Quad::draw_square(position - glm::vec2(node_radius, node_radius), glm::vec2(node_radius*2, node_radius*2));
@@ -92,7 +92,7 @@ public:
                 int node_value_zero_hundred = std::round(node_value * 100);
                 text_writer.render_string(std::to_string(node_value_zero_hundred), position - glm::vec2{17, 7}, 1, {0, 0, 0});
                 
-                int node_bias = std::round(n.network[layer_i].nodes[curr_i].bias * 100);
+                int node_bias = std::round(n.network[layer_i][curr_i].bias * 100);
                 text_writer.render_string(std::to_string(node_bias), position - glm::vec2{17, 40}, 1, {0, 0, 0});
             }
         }

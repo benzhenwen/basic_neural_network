@@ -37,40 +37,33 @@ public:
         }
     };
 
-    struct Layer {
+    struct Layer: public std::vector<Node> {
         bool is_input_layer;
 
-        std::vector<Node> nodes;
         Layer(unsigned int size, unsigned int prev_layer_size): 
-        is_input_layer(false),
-        nodes(size) {
-            for (Node & n : nodes) n.weights.resize(prev_layer_size);
+        std::vector<Node>(size),
+        is_input_layer(false) {
+            for (Node & n : *this) n.weights.resize(prev_layer_size);
         }
         Layer(unsigned int size): 
-        is_input_layer(true),
-        nodes(size) {} 
-
-        inline unsigned int size() const {
-            return nodes.size();
-        }
+        std::vector<Node>(size),
+        is_input_layer(true) {} 
 
         inline void calculate(Layer & input) {
             // reset 
-            for (int i = 0; i < nodes.size(); i++) {
-                nodes[i].raw_value = 0;
-            }
+            for (Node & n : *this) n.raw_value = 0;
 
             // apply weights
             for (int prev_i = 0; prev_i < input.size(); prev_i++) {
-                for (int curr_i = 0; curr_i < nodes.size(); curr_i++) {
-                    float prev_value = input.nodes[prev_i].value_check_is_input(input.is_input_layer);
-                    nodes[curr_i].raw_value += nodes[curr_i].weights[prev_i] * prev_value; // summation of node weights times input values
+                for (int curr_i = 0; curr_i < size(); curr_i++) {
+                    float prev_value = input[prev_i].value_check_is_input(input.is_input_layer);
+                    at(curr_i).raw_value += at(curr_i).weights[prev_i] * prev_value; // summation of node weights times input values
                 }
             }
 
             // apply bias
-            for (int curr_i = 0; curr_i < nodes.size(); curr_i++) {
-                nodes[curr_i].raw_value += nodes[curr_i].bias;
+            for (int curr_i = 0; curr_i < size(); curr_i++) {
+                at(curr_i).raw_value += at(curr_i).bias;
             }
         }
     };
@@ -88,11 +81,11 @@ public:
     }
 
     // access of input layer to modify values
-    inline std::vector<Node> & input_layer() {
-        return network.front().nodes;
+    inline Layer & input_layer() {
+        return network.front();
     }
-    inline std::vector<Node> & output_layer() {
-        return network.back().nodes;
+    inline Layer & output_layer() {
+        return network.back();
     }
 
     // append a new layer, or multiple layers with node count equal to size
@@ -115,7 +108,7 @@ public:
 
         unsigned int previous_layer_size = network[0].size();
         for (Layer & layer : network) {
-            for (Node & node : layer.nodes) {
+            for (Node & node : layer) {
                 std::generate(node.weights.begin(), node.weights.end(), [weight_variation]() { return rand_num(-weight_variation, weight_variation); });
                 node.bias = rand_num(-bias_variation * previous_layer_size, bias_variation * previous_layer_size);
             }
@@ -155,12 +148,12 @@ public:
             auto prev_expected_change = std::vector<float>(network[layer_i-1].size());
 
             for (int node_i = 0; node_i < layer.size(); node_i++) {
-                Node & node = layer.nodes[node_i];
+                Node & node = layer[node_i];
                 const float d_error_d_value = sigmoid_prime(node.raw()) * 2 * expected_change[node_i]; // (dC / dz(L) = s'(z(L)) * 2 * (a(L) - y) 
 
                 // weights
                 for (int weight_i = 0; weight_i < node.weights.size(); weight_i++) {
-                    node.weights[weight_i] += -1 * network[layer_i-1].nodes[weight_i].value_check_is_input(network[layer_i-1].is_input_layer) * d_error_d_value; // -(dz(L) / dw(L)) * (dC / dz(L)
+                    node.weights[weight_i] += -1 * network[layer_i-1][weight_i].value_check_is_input(network[layer_i-1].is_input_layer) * d_error_d_value; // -(dz(L) / dw(L)) * (dC / dz(L)
                 }
 
                 // bias
