@@ -21,7 +21,7 @@ int main() {
     auto char_set = GLFWE::Text::CharacterSet("fonts/arial.ttf", 20);
 
     auto network = BN::Network(2);
-    network.append_layers(3, 1);
+    // network.append_layers(3, 1);
     network.append_layers(2);
     network.randomize();
 
