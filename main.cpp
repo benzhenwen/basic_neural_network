@@ -3,7 +3,6 @@
 #include <GLFWE/window.hpp>
 
 #include <GLFWE/text/character_set.hpp>
-#include <GLFWE/shape/quad.hpp>
 
 #include <src/network.hpp>
 #include <src/network_drawer.hpp>
