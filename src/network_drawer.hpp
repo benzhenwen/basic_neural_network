@@ -67,7 +67,7 @@ public:
                 for (int curr_i = 0; curr_i < layer_size; curr_i++) {
                     glm::vec2 curr_position = {curr_x, vertical_position(layer_size, curr_i)};
 
-                    GLFWE::Shape::line(prev_position, curr_position, line_thickness).draw({0, 0}, line_color(layer[curr_i].weights[prev_i]));
+                    GLFWE::Shape::line(prev_position, curr_position, line_thickness).draw(line_color(layer[curr_i].weights[prev_i]));
 
                     // int weight = std::round(layer[curr_i].weights[prev_i] * 100);
                     // text_writer.render_string(std::to_string(weight), prev_position + (curr_position-prev_position)*glm::vec2(0.5, 0.5), 1, {0, 0, 0});
@@ -79,7 +79,6 @@ public:
         }
 
         // draw nodes on top
-        auto square = GLFWE::Shape::Rectangle({node_radius*2, node_radius*2}, GLFWE::Shape::CENTER);
         for (unsigned int layer_i = 0; layer_i < network.size(); layer_i++) {
             int layer_size = network[layer_i].size();
             float curr_x = horizontal_position(layer_i);
@@ -88,7 +87,7 @@ public:
                 glm::vec2 position = {curr_x, vertical_position(layer_size, curr_i)};
                 float node_value = network[layer_i].is_input_layer ? network[layer_i][curr_i].raw() : network[layer_i][curr_i].value();
 
-                square.draw(position, node_color(node_value));
+                GLFWE::Shape::Rectangle(position, {node_radius*2, node_radius*2}, GLFWE::Shape::CENTER).draw(node_color(node_value));
 
                 int node_value_zero_hundred = std::round(node_value * 100);
                 text_writer.render_string(std::to_string(node_value_zero_hundred), position - glm::vec2{17, 7}, 1, {0, 0, 0});
